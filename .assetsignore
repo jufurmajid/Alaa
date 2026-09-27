@@ -1,0 +1,15 @@
+.git/
+.github/
+node_modules/
+src/
+api/
+lib/
+server.mjs
+package.json
+package-lock.json
+wrangler.jsonc
+README.md
+.env
+.env.*
+.gitignore
+.assetsignore
