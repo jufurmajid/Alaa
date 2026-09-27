@@ -14,6 +14,7 @@
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="polish.css" />
 </head>
 <body>
   <main class="app-shell" id="appShell">
@@ -208,13 +209,13 @@
         </label>
 
         <label class="file-label field-block">
-          <span class="field-label">ملفات نصية مساندة <small>اختياري</small></span>
-          <input id="caseFiles" name="files" type="file" multiple accept=".txt,.md,.csv,text/plain,text/markdown,text/csv" />
+          <span class="field-label">مستندات وصور القضية <small>اختياري — حتى 4 ملفات</small></span>
+          <input id="caseFiles" name="files" type="file" multiple accept=".pdf,.doc,.docx,.rtf,.odt,.txt,.md,.csv,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.webp" />
           <span class="file-box">
             <span class="upload-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24"><path d="M12 16V4m0 0-4 4m4-4 4 4M5 15v4h14v-4" /></svg>
             </span>
-            <span class="file-copy"><strong>إضافة ملف نصي</strong><small>TXT / MD / CSV — يقرأه المتصفح عند إرسال الطلب فقط</small></span>
+            <span class="file-copy"><strong>إضافة مستند أو صورة</strong><small>PDF / Word / Excel / صور / ملفات نصية</small></span>
           </span>
         </label>
 
@@ -255,5 +256,6 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="app.js" defer></script>
+  <script src="polish.js" defer></script>
 </body>
 </html>
