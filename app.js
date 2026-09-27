@@ -16,7 +16,13 @@ const sendFollowUp = document.getElementById('sendFollowUp');
 const toast = document.getElementById('toast');
 
 const API_ENDPOINT = window.ALAA_AI_ENDPOINT || '/api/ai';
-const MAX_TEXT_ATTACHMENT_CHARS = 45000;
+const MAX_FILES = 4;
+const MAX_SINGLE_FILE_BYTES = 8 * 1024 * 1024;
+const MAX_TOTAL_FILE_BYTES = 10 * 1024 * 1024;
+const ACCEPTED_EXTENSIONS = new Set([
+  'pdf', 'doc', 'docx', 'rtf', 'odt', 'txt', 'md', 'csv',
+  'xls', 'xlsx', 'ppt', 'pptx', 'jpg', 'jpeg', 'png', 'webp'
+]);
 
 const toolConfig = {
   civil: {
@@ -121,7 +127,7 @@ function showToast(message) {
   clearTimeout(toastTimer);
   toast.textContent = message;
   toast.classList.add('show');
-  toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
 }
 
 function createField(field) {
@@ -171,9 +177,7 @@ function createField(field) {
 function renderToolFields(toolName) {
   dynamicFields.innerHTML = '';
   const config = toolConfig[toolName];
-  for (const field of config.fields) {
-    dynamicFields.appendChild(createField(field));
-  }
+  for (const field of config.fields) dynamicFields.appendChild(createField(field));
 }
 
 function openTool(toolName) {
@@ -244,37 +248,89 @@ function validateRequiredFields() {
   return false;
 }
 
+function extensionOf(name) {
+  return String(name || '').split('.').pop().toLowerCase();
+}
+
+function guessMime(file) {
+  if (file.type) return file.type;
+  const ext = extensionOf(file.name);
+  const map = {
+    pdf: 'application/pdf',
+    doc: 'application/msword',
+    docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    rtf: 'application/rtf',
+    odt: 'application/vnd.oasis.opendocument.text',
+    txt: 'text/plain',
+    md: 'text/markdown',
+    csv: 'text/csv',
+    xls: 'application/vnd.ms-excel',
+    xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    ppt: 'application/vnd.ms-powerpoint',
+    pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    jpg: 'image/jpeg',
+    jpeg: 'image/jpeg',
+    png: 'image/png',
+    webp: 'image/webp'
+  };
+  return map[ext] || 'application/octet-stream';
+}
+
 function updateFileLabel() {
+  const fieldLabel = caseFiles.closest('.field-block')?.querySelector('.field-label');
   const title = document.querySelector('.file-copy strong');
   const subtitle = document.querySelector('.file-copy small');
   const count = caseFiles.files.length;
 
+  if (fieldLabel) fieldLabel.innerHTML = 'مستندات وصور القضية <small>اختياري — حتى 4 ملفات</small>';
+  caseFiles.accept = '.pdf,.doc,.docx,.rtf,.odt,.txt,.md,.csv,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.webp';
+
   if (!count) {
-    title.textContent = 'إضافة ملف نصي';
-    subtitle.textContent = 'TXT / MD / CSV — يقرأه المتصفح عند إرسال الطلب فقط';
+    title.textContent = 'إضافة مستند أو صورة';
+    subtitle.textContent = 'PDF / Word / Excel / صور / ملفات نصية';
     return;
   }
 
   title.textContent = count === 1 ? caseFiles.files[0].name : `تم اختيار ${count} ملفات`;
-  subtitle.textContent = 'سيتم تضمين النص مع الطلب دون حفظه في المتصفح';
+  const totalMB = [...caseFiles.files].reduce((sum, file) => sum + file.size, 0) / (1024 * 1024);
+  subtitle.textContent = `الحجم الكلي ${totalMB.toFixed(1)} MB — تُرسل للتحليل فقط عند تشغيل الأداة`;
 }
 
-async function readTextAttachments() {
-  if (!caseFiles.files.length) return '';
+function fileToDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ''));
+    reader.onerror = () => reject(new Error(`تعذر قراءة الملف: ${file.name}`));
+    reader.readAsDataURL(file);
+  });
+}
 
-  let combined = '';
-  for (const file of [...caseFiles.files].slice(0, 6)) {
-    const text = await file.text();
-    const remaining = MAX_TEXT_ATTACHMENT_CHARS - combined.length;
-    if (remaining <= 0) break;
-    combined += `\n\n--- ملف: ${file.name} ---\n${text.slice(0, remaining)}`;
+async function prepareAttachments() {
+  const files = [...caseFiles.files];
+  if (!files.length) return [];
+  if (files.length > MAX_FILES) throw new Error(`يمكن إرفاق ${MAX_FILES} ملفات كحد أقصى في الطلب الواحد.`);
+
+  let total = 0;
+  for (const file of files) {
+    const ext = extensionOf(file.name);
+    if (!ACCEPTED_EXTENSIONS.has(ext)) throw new Error(`صيغة الملف ${file.name} غير مدعومة حالياً.`);
+    if (file.size > MAX_SINGLE_FILE_BYTES) throw new Error(`الملف ${file.name} أكبر من 8 MB. قلّل حجمه ثم حاول مرة أخرى.`);
+    total += file.size;
   }
 
-  if (combined.length >= MAX_TEXT_ATTACHMENT_CHARS) {
-    showToast('تم اختصار محتوى الملفات حتى لا يصبح الطلب كبيراً جداً');
+  if (total > MAX_TOTAL_FILE_BYTES) {
+    throw new Error('الحجم الكلي للمرفقات أكبر من 10 MB. قلّل عدد الملفات أو حجمها.');
   }
 
-  return combined.trim();
+  const attachments = [];
+  for (const file of files) {
+    attachments.push({
+      name: file.name,
+      type: guessMime(file),
+      dataUrl: await fileToDataUrl(file)
+    });
+  }
+  return attachments;
 }
 
 function getTitleFromFields(fields) {
@@ -309,6 +365,9 @@ async function callAI(payload) {
     if (response.status === 404) {
       throw new Error('الواجهة جاهزة، لكن مسار الذكاء الاصطناعي غير موجود على الاستضافة الحالية. سنربطه عند اختيار الاستضافة النهائية.');
     }
+    if (response.status === 413) {
+      throw new Error('حجم المستندات أكبر من الحد الذي تسمح به الاستضافة الحالية. جرّب ملفات أصغر.');
+    }
     if (data?.error === 'AI_NOT_CONFIGURED') {
       throw new Error(data.message || 'خدمة الذكاء الاصطناعي تحتاج إلى مفتاح API على الخادم.');
     }
@@ -320,7 +379,7 @@ async function callAI(payload) {
   return { text, model: String(data.model || 'AI') };
 }
 
-function showLoading(message = 'الذكاء الاصطناعي يراجع التفاصيل ويجهّز النتيجة...') {
+function showLoading(message = 'الذكاء الاصطناعي يراجع التفاصيل والمستندات ويجهّز النتيجة...') {
   aiResult.hidden = false;
   followUpBox.hidden = true;
   resultModel.textContent = 'يعمل الآن';
@@ -396,14 +455,13 @@ aiForm.addEventListener('submit', async (event) => {
   showLoading();
 
   try {
-    const attachmentText = await readTextAttachments();
-    if (attachmentText) fields['محتوى الملفات النصية المرفقة'] = attachmentText;
-
+    const attachments = await prepareAttachments();
     lastSubmission = {
       tool: activeTool,
       title: getTitleFromFields(fields),
       fields,
-      details
+      details,
+      attachments
     };
 
     const result = await callAI(lastSubmission);
@@ -425,18 +483,21 @@ sendFollowUp.addEventListener('click', async () => {
     return;
   }
 
+  const previousText = currentResultText;
+  const previousModel = currentModel;
   sendFollowUp.disabled = true;
   showLoading('جاري تعديل النتيجة حسب طلبك...');
 
   try {
     const result = await callAI({
       ...lastSubmission,
-      previousResult: currentResultText,
+      previousResult: previousText,
       followUp
     });
     renderResult(result.text, result.model);
   } catch (error) {
-    renderError(error.message || 'تعذر تنفيذ طلب المتابعة.');
+    renderResult(previousText, previousModel);
+    showToast(error.message || 'تعذر تنفيذ طلب المتابعة. بقيت النتيجة السابقة محفوظة على الشاشة.');
   } finally {
     sendFollowUp.disabled = false;
   }
@@ -483,6 +544,7 @@ document.querySelectorAll('[data-close-sheet]').forEach((element) => {
 
 clearFormButton.addEventListener('click', clearForm);
 caseFiles.addEventListener('change', updateFileLabel);
+updateFileLabel();
 
 document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape' && toolSheet.classList.contains('is-open')) closeTool();
