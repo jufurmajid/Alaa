@@ -1,0 +1,13 @@
+{
+  "name": "alaa-legal-assistant",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Personal AI-first Iraqi legal assistant for lawyer Alaa Al-Darraji",
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
