@@ -1,9 +1,11 @@
-const CACHE_NAME = 'alaa-legal-v1';
+const CACHE_NAME = 'alaa-legal-v2';
 const APP_SHELL = [
   '/',
   '/index.html',
   '/styles.css',
+  '/polish.css',
   '/app.js',
+  '/polish.js',
   '/manifest.webmanifest',
   '/icon.svg'
 ];
