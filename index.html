@@ -4,25 +4,29 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#080808" />
-  <meta name="description" content="المساعد القانوني الشخصي للمحامي علاء الدراجي" />
+  <meta name="description" content="المساعد القانوني الشخصي بالذكاء الاصطناعي للمحامي علاء الدراجي" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>علاء الدراجي | المساعد القانوني الذكي</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Noto+Kufi+Arabic:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Noto+Kufi+Arabic:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <main class="app-shell" id="appShell">
-    <div class="ambient ambient-one"></div>
-    <div class="ambient ambient-two"></div>
+    <div class="ambient ambient-one" aria-hidden="true"></div>
+    <div class="ambient ambient-two" aria-hidden="true"></div>
 
     <section class="hero" aria-labelledby="app-title">
       <div class="hero-architecture" aria-hidden="true">
-        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
       </div>
 
       <div class="justice-mark" aria-hidden="true">
-        <svg viewBox="0 0 120 120" role="img">
+        <svg viewBox="0 0 120 120">
           <defs>
             <linearGradient id="goldGradient" x1="0" y1="0" x2="1" y2="1">
               <stop offset="0%" stop-color="#fff1b0" />
@@ -46,9 +50,9 @@
       </div>
 
       <div class="brand-copy">
-        <p class="eyebrow">المساعد القانوني الشخصي</p>
+        <p class="eyebrow">AI LEGAL ASSISTANT</p>
         <h1 id="app-title">علاء الدراجي</h1>
-        <p class="latin-title">Al-Darraji</p>
+        <p class="latin-title">AL-DARRAJI</p>
         <p class="hero-subtitle">المساعد القانوني العراقي <span>•</span> استشارات <span>•</span> صياغة لوائح</p>
       </div>
     </section>
@@ -56,110 +60,122 @@
     <section class="welcome-grid" aria-label="لوحة الترحيب">
       <article class="glass-card welcome-card">
         <div class="card-topline">
-          <div class="round-icon small">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7 8a7 7 0 0 0-14 0" /></svg>
+          <div class="round-icon small" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7 8a7 7 0 0 0-14 0" /></svg>
           </div>
-          <span class="gold-dot"></span>
+          <span class="status-label"><span class="pulse-dot"></span> جاهز</span>
         </div>
         <h2>مرحباً علاء</h2>
-        <p>جاهز لمساعدتك اليوم — كيف يمكنني خدمتك؟</p>
+        <p>مساعدك القانوني جاهز للعمل. اختر التخصص أو الأداة وابدأ مباشرة.</p>
       </article>
 
       <article class="glass-card specialties-card">
         <div class="card-topline">
           <span class="ai-badge"><span class="pulse-dot"></span> 24/7 • AI</span>
-          <div class="round-icon small">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h8v3h3v8h-3v3H8v-3H5V6h3V3Zm2 6h4m-4 4h4" /></svg>
+          <div class="round-icon small" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M8 3h8v3h3v8h-3v3H8v-3H5V6h3V3Zm2 6h4m-4 4h4" /></svg>
           </div>
         </div>
         <h2>التخصصات القضائية</h2>
-        <p>اختر التخصص لبدء الاستشارة</p>
+        <p>كل قسم يعمل بتعليمات ذكاء اصطناعي مخصصة لطبيعة القضية.</p>
       </article>
     </section>
 
     <section class="specialty-grid" aria-label="التخصصات القضائية">
       <button class="specialty-tile js-open-tool" data-tool="civil" type="button">
-        <span class="specialty-icon">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h8l3 3v15H7z" /><path d="M15 3v4h4M10 11h5m-5 4h5" /></svg>
+        <span class="specialty-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M7 3h8l3 3v15H7z" /><path d="M15 3v4h4M10 11h5m-5 4h5" /></svg>
         </span>
         <span class="specialty-label">المدني</span>
+        <span class="specialty-meta">تحليل وصياغة</span>
       </button>
 
       <button class="specialty-tile js-open-tool" data-tool="criminal" type="button">
-        <span class="specialty-icon">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.7 2.8 8.2 7 10 4.2-1.8 7-5.3 7-10V6z" /><path d="m9 12 2 2 4-4" /></svg>
+        <span class="specialty-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.7 2.8 8.2 7 10 4.2-1.8 7-5.3 7-10V6z" /><path d="m9 12 2 2 4-4" /></svg>
         </span>
         <span class="specialty-label">الجزائي</span>
+        <span class="specialty-meta">أدلة ودفوع</span>
       </button>
 
       <button class="specialty-tile js-open-tool" data-tool="jaafari" type="button">
-        <span class="specialty-icon">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21h16M6 19V9m12 10V9M4 9h16M7 6h10M9 3h6" /><path d="M10 12v4m4-4v4" /></svg>
+        <span class="specialty-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M4 21h16M6 19V9m12 10V9M4 9h16M7 6h10M9 3h6" /><path d="M10 12v4m4-4v4" /></svg>
         </span>
         <span class="specialty-label">الشرعي الجعفري</span>
+        <span class="specialty-meta">قضايا شرعية</span>
       </button>
     </section>
 
     <section class="tools-section" aria-labelledby="tools-title">
       <div class="section-heading">
         <div>
-          <p class="section-kicker">AI LEGAL TOOLS</p>
+          <p class="section-kicker">SMART LEGAL TOOLS</p>
           <h2 id="tools-title">الأدوات السريعة</h2>
-          <p>أدوات ذكية للعمل القانوني</p>
+          <p>أدوات مهيأة للعمل القانوني بالذكاء الاصطناعي</p>
         </div>
         <span class="heading-line" aria-hidden="true"></span>
       </div>
 
       <div class="tools-grid">
         <button class="tool-card js-open-tool" data-tool="draft" type="button">
-          <span class="tool-glow"></span>
-          <span class="tool-icon feather-icon">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 3.5c-6.5 0-11.6 3-14 8.7L4 18l5.8-2.5C15.5 13 18.5 8 20.5 3.5Z" /><path d="M8 16 4 20m4.5-7.5 3 3" /></svg>
+          <span class="tool-number">01</span>
+          <span class="tool-glow" aria-hidden="true"></span>
+          <span class="tool-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M20.5 3.5c-6.5 0-11.6 3-14 8.7L4 18l5.8-2.5C15.5 13 18.5 8 20.5 3.5Z" /><path d="M8 16 4 20m4.5-7.5 3 3" /></svg>
           </span>
           <span class="tool-copy">
             <strong>كتابة لائحة</strong>
-            <small>صياغة لائحة دعوى احترافية بالذكاء الاصطناعي</small>
+            <small>صياغة مسودة قانونية منظمة من بيانات الدعوى</small>
           </span>
           <span class="card-arrow" aria-hidden="true">‹</span>
         </button>
 
         <button class="tool-card js-open-tool" data-tool="analysis" type="button">
-          <span class="tool-glow"></span>
-          <span class="tool-icon">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m16 16 5 5M8 11h6m-3-3v6" /></svg>
+          <span class="tool-number">02</span>
+          <span class="tool-glow" aria-hidden="true"></span>
+          <span class="tool-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" /><path d="m16 16 5 5M8 11h6m-3-3v6" /></svg>
           </span>
           <span class="tool-copy">
             <strong>تحليل قضية</strong>
-            <small>تحليل وإبراز الحجج القانونية</small>
+            <small>وقائع وأدلة ونقاط قوة وضعف وخطوة مقترحة</small>
           </span>
           <span class="card-arrow" aria-hidden="true">‹</span>
         </button>
 
         <button class="tool-card js-open-tool" data-tool="appeal" type="button">
-          <span class="tool-glow"></span>
-          <span class="tool-icon">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h8l3 3v15H7z" /><path d="M15 3v4h4M4 8h7M4 12h7M4 16h7" /></svg>
+          <span class="tool-number">03</span>
+          <span class="tool-glow" aria-hidden="true"></span>
+          <span class="tool-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M7 3h8l3 3v15H7z" /><path d="M15 3v4h4M4 8h7M4 12h7M4 16h7" /></svg>
           </span>
           <span class="tool-copy">
             <strong>لائحة تمييزية</strong>
-            <small>طلب تمييز ونقض القرار</small>
+            <small>ترتيب أسباب الطعن وصياغة الطلبات بصورة مهنية</small>
           </span>
           <span class="card-arrow" aria-hidden="true">‹</span>
         </button>
 
         <button class="tool-card js-open-tool" data-tool="employees" type="button">
-          <span class="tool-glow"></span>
-          <span class="tool-icon">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21h16M6 19V9m12 10V9M4 9h16M7 6h10M9 3h6" /><path d="M10 12v4m4-4v4" /></svg>
+          <span class="tool-number">04</span>
+          <span class="tool-glow" aria-hidden="true"></span>
+          <span class="tool-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 21h16M6 19V9m12 10V9M4 9h16M7 6h10M9 3h6" /><path d="M10 12v4m4-4v4" /></svg>
           </span>
           <span class="tool-copy">
             <strong>قضاء الموظفين</strong>
-            <small>دعاوى وقضايا إدارية</small>
+            <small>تحليل القرارات والنزاعات الوظيفية والإدارية</small>
           </span>
           <span class="card-arrow" aria-hidden="true">‹</span>
         </button>
       </div>
     </section>
+
+    <div class="privacy-strip">
+      <span aria-hidden="true">✦</span>
+      <p>الموقع لا ينشئ حسابات ولا يحفظ بيانات القضايا في قاعدة بيانات داخل النسخة الحالية.</p>
+    </div>
 
     <footer class="creator-credit">تصميم وتطوير <span>جعفر ماجد</span></footer>
   </main>
@@ -168,49 +184,76 @@
     <div class="sheet-backdrop" data-close-sheet></div>
     <section class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
       <div class="sheet-handle" aria-hidden="true"></div>
+
       <header class="sheet-header">
-        <div>
-          <p class="sheet-kicker">AI LEGAL ASSISTANT</p>
+        <div class="sheet-heading-copy">
+          <p class="sheet-kicker">AI LEGAL WORKSPACE</p>
           <h2 id="sheetTitle">الأداة</h2>
-          <p id="sheetSubtitle">أدخل التفاصيل ليجهّز الذكاء الاصطناعي المسودة.</p>
+          <p id="sheetSubtitle">أدخل التفاصيل ليجهّز الذكاء الاصطناعي النتيجة.</p>
         </div>
         <button class="close-button" type="button" data-close-sheet aria-label="إغلاق">×</button>
       </header>
 
-      <form class="ai-form" id="aiForm">
-        <label>
-          <span>عنوان أو وصف مختصر</span>
-          <input id="caseTitle" name="title" type="text" placeholder="مثال: دعوى مطالبة بدين" autocomplete="off" />
+      <div class="sheet-tool-status">
+        <span><span class="pulse-dot"></span> ذكاء اصطناعي متخصص</span>
+        <span>العراق</span>
+      </div>
+
+      <form class="ai-form" id="aiForm" novalidate>
+        <div class="dynamic-fields" id="dynamicFields"></div>
+
+        <label class="field-block">
+          <span class="field-label">تفاصيل إضافية</span>
+          <textarea id="caseDetails" name="details" rows="6" placeholder="أضف الوقائع والملاحظات والتفاصيل التي تريد أن يأخذها الذكاء الاصطناعي بالحسبان..."></textarea>
         </label>
 
-        <label>
-          <span>تفاصيل القضية</span>
-          <textarea id="caseDetails" name="details" rows="7" placeholder="اكتب الوقائع، أسماء الأطراف، المحكمة، الطلبات وأي معلومات مهمة..."></textarea>
-        </label>
-
-        <label class="file-label">
-          <span>مستندات القضية</span>
-          <input id="caseFiles" name="files" type="file" multiple accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png" />
+        <label class="file-label field-block">
+          <span class="field-label">ملفات نصية مساندة <small>اختياري</small></span>
+          <input id="caseFiles" name="files" type="file" multiple accept=".txt,.md,.csv,text/plain,text/markdown,text/csv" />
           <span class="file-box">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0-4 4m4-4 4 4M5 15v4h14v-4" /></svg>
-            <span>إضافة ملفات أو صور</span>
+            <span class="upload-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M12 16V4m0 0-4 4m4-4 4 4M5 15v4h14v-4" /></svg>
+            </span>
+            <span class="file-copy"><strong>إضافة ملف نصي</strong><small>TXT / MD / CSV — يقرأه المتصفح عند إرسال الطلب فقط</small></span>
           </span>
         </label>
 
-        <button class="ai-submit" type="submit">
-          <span class="sparkle">✦</span>
-          <span id="submitLabel">تشغيل الذكاء الاصطناعي</span>
-        </button>
+        <div class="form-note">
+          <span aria-hidden="true">⚖</span>
+          <p>كل نتيجة هي مسودة مساعدة للمحامي. راجع الوقائع وأرقام المواد والقرارات قبل الاعتماد النهائي.</p>
+        </div>
+
+        <div class="form-actions">
+          <button class="secondary-action" id="clearForm" type="button">مسح الحقول</button>
+          <button class="ai-submit" type="submit">
+            <span class="sparkle" aria-hidden="true">✦</span>
+            <span id="submitLabel">تشغيل الذكاء الاصطناعي</span>
+          </button>
+        </div>
       </form>
 
-      <div class="ai-result" id="aiResult" hidden>
-        <div class="result-title"><span>✦</span> نتيجة الذكاء الاصطناعي</div>
-        <div id="resultContent"></div>
-      </div>
+      <section class="ai-result" id="aiResult" hidden aria-live="polite">
+        <div class="result-head">
+          <div>
+            <p>AI RESULT</p>
+            <h3><span aria-hidden="true">✦</span> نتيجة الذكاء الاصطناعي</h3>
+          </div>
+          <span class="result-model" id="resultModel">AI</span>
+        </div>
+        <div class="result-content" id="resultContent"></div>
+
+        <div class="follow-up" id="followUpBox" hidden>
+          <label for="followUpInput">عدّل أو تابع النتيجة</label>
+          <div class="follow-up-row">
+            <textarea id="followUpInput" rows="2" placeholder="مثال: قوّي أسباب الطعن، أو اختصرها، أو أعد صياغة الطلبات..."></textarea>
+            <button id="sendFollowUp" type="button" aria-label="إرسال طلب المتابعة">✦</button>
+          </div>
+        </div>
+      </section>
     </section>
   </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="app.js"></script>
+  <script src="app.js" defer></script>
 </body>
 </html>
