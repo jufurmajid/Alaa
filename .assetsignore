@@ -9,6 +9,7 @@ package.json
 package-lock.json
 wrangler.jsonc
 README.md
+DEPLOYMENT.md
 .env
 .env.*
 .gitignore
