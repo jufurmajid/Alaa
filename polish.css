@@ -1,0 +1,295 @@
+/* Final premium polish layer for the Alaa legal assistant */
+
+:root {
+  --gold-glow: rgba(229, 189, 89, 0.2);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  overscroll-behavior-y: none;
+}
+
+.app-shell {
+  min-height: 100dvh;
+  padding-bottom: calc(40px + env(safe-area-inset-bottom));
+}
+
+.justice-mark,
+.brand-copy,
+.glass-card,
+.specialty-tile,
+.tool-card {
+  will-change: transform;
+}
+
+.glass-card,
+.specialty-tile,
+.tool-card {
+  isolation: isolate;
+}
+
+.specialty-tile::before,
+.tool-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 25%, rgba(255, 242, 179, 0.055) 46%, transparent 66%);
+  transform: translateX(45%);
+  opacity: 0;
+  transition: transform .55s ease, opacity .3s ease;
+}
+
+@media (hover: hover) {
+  .specialty-tile:hover::before,
+  .tool-card:hover::after {
+    transform: translateX(-45%);
+    opacity: 1;
+  }
+}
+
+.tool-card:focus-visible,
+.specialty-tile:focus-visible {
+  box-shadow: 0 0 0 1px rgba(229, 189, 89, .65), 0 0 30px rgba(229, 189, 89, .08), 0 22px 50px rgba(0,0,0,.48);
+}
+
+.sheet-backdrop {
+  backdrop-filter: blur(9px);
+  -webkit-backdrop-filter: blur(9px);
+}
+
+.sheet-panel {
+  padding-bottom: calc(20px + env(safe-area-inset-bottom));
+}
+
+.field-block input,
+.field-block textarea,
+.field-block select,
+.follow-up textarea {
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.field-block input:focus,
+.field-block textarea:focus,
+.field-block select:focus,
+.follow-up textarea:focus {
+  border-color: rgba(229, 189, 89, .52) !important;
+  box-shadow: 0 0 0 3px rgba(229, 189, 89, .065), inset 0 1px 0 rgba(255,255,255,.025);
+  background: rgba(18, 17, 14, .96) !important;
+}
+
+.ai-submit {
+  position: relative;
+  overflow: hidden;
+}
+
+.ai-submit::after {
+  content: "";
+  position: absolute;
+  top: -40%;
+  bottom: -40%;
+  width: 44px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+  transform: translateX(260%) rotate(16deg);
+  animation: premiumSweep 4.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes premiumSweep {
+  0%, 72% { transform: translateX(310%) rotate(16deg); opacity: 0; }
+  78% { opacity: .7; }
+  94% { transform: translateX(-560%) rotate(16deg); opacity: .25; }
+  100% { opacity: 0; }
+}
+
+.ai-loading {
+  min-height: 108px;
+  border: 1px solid rgba(229, 189, 89, .13);
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(229,189,89,.045), rgba(255,255,255,.012));
+  overflow: hidden;
+  position: relative;
+}
+
+.ai-loading::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 20%, rgba(255,255,255,.035) 43%, transparent 67%);
+  animation: loadingSweep 1.45s linear infinite;
+}
+
+@keyframes loadingSweep {
+  from { transform: translateX(100%); }
+  to { transform: translateX(-100%); }
+}
+
+/* Structured legal result formatting added by polish.js */
+.result-content .ai-text {
+  white-space: normal !important;
+  line-height: 1.95;
+}
+
+.legal-result-block {
+  display: grid;
+  gap: 9px;
+}
+
+.legal-result-block .legal-heading {
+  margin: 13px 0 1px;
+  padding: 8px 11px;
+  border-right: 2px solid rgba(229, 189, 89, .72);
+  border-radius: 0 10px 10px 0;
+  background: linear-gradient(90deg, transparent, rgba(229,189,89,.055));
+  color: #f2d783;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: .01em;
+}
+
+.legal-result-block .legal-paragraph {
+  margin: 0;
+  color: #eee5cf;
+  font-size: 13px;
+  line-height: 2;
+}
+
+.legal-result-block .legal-bullet,
+.legal-result-block .legal-numbered {
+  position: relative;
+  margin: 0;
+  padding: 5px 23px 5px 6px;
+  color: #e9e0c9;
+  font-size: 12.8px;
+  line-height: 1.9;
+  border-bottom: 1px solid rgba(255,255,255,.025);
+}
+
+.legal-result-block .legal-bullet::before {
+  content: "✦";
+  position: absolute;
+  right: 3px;
+  top: 6px;
+  color: #d7ad4d;
+  font-size: 9px;
+}
+
+.legal-result-block .legal-numbered::before {
+  content: attr(data-number);
+  position: absolute;
+  right: 1px;
+  top: 5px;
+  width: 17px;
+  height: 17px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  color: #e8c86c;
+  background: rgba(229,189,89,.07);
+  border: 1px solid rgba(229,189,89,.16);
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.followup-presets {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  padding: 2px 0 9px;
+  scrollbar-width: none;
+}
+
+.followup-presets::-webkit-scrollbar {
+  display: none;
+}
+
+.followup-chip {
+  flex: 0 0 auto;
+  border: 1px solid rgba(229,189,89,.19);
+  border-radius: 999px;
+  padding: 7px 10px;
+  color: #d9c78f;
+  background: rgba(229,189,89,.045);
+  font: inherit;
+  font-size: 10px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.followup-chip:active {
+  transform: scale(.97);
+  border-color: rgba(229,189,89,.46);
+}
+
+.touch-ripple {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: rgba(255, 226, 139, .22);
+  transform: translate(-50%, -50%) scale(0);
+  animation: touchRipple .58s ease-out forwards;
+  z-index: 8;
+}
+
+@keyframes touchRipple {
+  to {
+    transform: translate(-50%, -50%) scale(16);
+    opacity: 0;
+  }
+}
+
+.install-app-pill {
+  position: fixed;
+  z-index: 90;
+  left: 50%;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  border: 1px solid rgba(229,189,89,.3);
+  border-radius: 999px;
+  padding: 9px 15px;
+  background: rgba(10,10,10,.92);
+  color: #f0d274;
+  box-shadow: 0 10px 30px rgba(0,0,0,.45), 0 0 22px rgba(229,189,89,.07);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+body.is-offline .status-label,
+body.is-offline .ai-badge {
+  opacity: .55;
+}
+
+body.is-offline .status-label .pulse-dot,
+body.is-offline .ai-badge .pulse-dot {
+  box-shadow: none;
+  background: #817b6b;
+}
+
+@media (max-width: 390px) {
+  .legal-result-block .legal-paragraph,
+  .legal-result-block .legal-bullet,
+  .legal-result-block .legal-numbered {
+    font-size: 12.2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
