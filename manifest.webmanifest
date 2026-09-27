@@ -1,0 +1,19 @@
+{
+  "name": "علاء الدراجي — المساعد القانوني الذكي",
+  "short_name": "علاء القانوني",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#080808",
+  "description": "مساعد قانوني شخصي بالذكاء الاصطناعي للمحامي علاء الدراجي",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
