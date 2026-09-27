@@ -14,12 +14,21 @@ const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
-  '.mjs': 'text/javascript; charset=utf-8',
   '.json': 'application/json; charset=utf-8',
   '.webmanifest': 'application/manifest+json; charset=utf-8',
   '.svg': 'image/svg+xml; charset=utf-8',
   '.txt': 'text/plain; charset=utf-8'
 };
+
+const PRIVATE_TOP_LEVEL = new Set([
+  'api',
+  'lib',
+  '.git',
+  '.github',
+  'server.mjs',
+  'package.json',
+  'package-lock.json'
+]);
 
 function setCommonHeaders(res) {
   res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -89,9 +98,13 @@ function safePathFromUrl(urlPath) {
   }
 
   const clean = decoded === '/' ? '/index.html' : decoded;
-  const resolved = path.resolve(__dirname, `.${clean}`);
-  if (!resolved.startsWith(__dirname)) return null;
-  return resolved;
+  const relative = clean.replace(/^\/+/, '');
+  const firstSegment = relative.split('/')[0];
+  if (!firstSegment || PRIVATE_TOP_LEVEL.has(firstSegment) || firstSegment.startsWith('.')) return null;
+
+  const resolved = path.resolve(__dirname, relative);
+  const insideRoot = resolved === __dirname || resolved.startsWith(`${__dirname}${path.sep}`);
+  return insideRoot ? resolved : null;
 }
 
 async function serveStatic(req, res) {
@@ -101,12 +114,7 @@ async function serveStatic(req, res) {
 
   let filePath = safePathFromUrl(req.url || '/');
   if (!filePath) {
-    res.writeHead(400);
-    return res.end('Bad request');
-  }
-
-  if (filePath.includes(`${path.sep}api${path.sep}`) || filePath.includes(`${path.sep}lib${path.sep}`)) {
-    res.writeHead(404);
+    res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
     return res.end('Not found');
   }
 
