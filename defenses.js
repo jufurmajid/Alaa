@@ -1,177 +1,148 @@
 (() => {
-  if (typeof toolConfig === 'undefined' || typeof renderToolFields !== 'function') return;
+  if (typeof toolConfig === 'undefined' || typeof callAI !== 'function') return;
 
-  const defenseField = {
-    name: 'productiveDefenses',
-    label: 'الدفوع المنتجة في الدعوى',
-    type: 'select',
-    options: [
-      'تحليل شامل وترتيب الدفوع المنتجة حسب الأولوية',
-      'الدفوع الشكلية والإجرائية فقط',
-      'الدفوع الموضوعية فقط',
-      'دفوع الخصم والرد عليها',
-      'لا أريد تحليل الدفوع في هذا الطلب'
-    ]
-  };
+  const aiForm = document.getElementById('aiForm');
+  const dynamicFields = document.getElementById('dynamicFields');
+  if (!aiForm || !dynamicFields || document.getElementById('productiveDefensesAction')) return;
 
-  const guidanceText = [
-    'عند طلب تحليل الدفوع المنتجة افحص فقط الدفوع التي يمكن أن تؤثر فعلياً في نتيجة الدعوى أو سيرها.',
-    'صنّف كل دفع إلى شكلي أو إجرائي أو موضوعي بحسب طبيعته، ولا تجزم بالتصنيف إذا كانت الوقائع غير كافية.',
-    'لكل دفع اذكر: عنوان الدفع، أساسه من الوقائع المقدمة، سبب كونه منتجاً، أثره المتوقع إذا قُبل، ما يلزم لإثباته، توقيت أو مرحلة إثارته إن كانت مهمة، أولوية الدفع، وأقوى رد محتمل من الخصم وكيفية مواجهته.',
-    'رتّب الدفوع من الأقوى والأكثر تأثيراً إلى الأضعف، وافصل بين دفع مؤكد ودفع محتمل يحتاج مستنداً أو واقعة إضافية.',
-    'لا تختلق مادة قانونية أو رقم قرار أو سابقة قضائية. إذا احتاج الدفع إلى سند قانوني محدد ولم تكن متأكداً منه فاكتب أن المرجع يحتاج إلى تحقق من المحامي.',
-    'إذا كان نوع الأداة صياغة لائحة أو طعن، استخرج أيضاً الدفوع أو الردود المتوقعة من الطرف المقابل حتى يتمكن المحامي من تحصين الصياغة.'
-  ].join(' ');
+  const DEFENSE_PROMPT = `المطلوب حصراً: استخراج الدفوع المنتجة في هذه الدعوى من الوقائع والمستندات المقدمة، وليس إجراء تحليل عام للقضية.
+رتّب الدفوع من الأقوى والأكثر تأثيراً إلى الأضعف، ولا تذكر دفعاً لمجرد الاحتمال إذا لم تسنده الوقائع.
+لكل دفع اذكر بصورة منفصلة:
+1) عنوان الدفع.
+2) نوعه: شكلي أو إجرائي أو موضوعي، وإذا لم يكفِ الملف للتصنيف فاذكر ذلك.
+3) الوقائع أو المستندات التي تسنده.
+4) لماذا يُعد منتجاً ومؤثراً في نتيجة الدعوى أو سيرها.
+5) الأثر المتوقع إذا قُبل.
+6) ما يلزم لإثباته أو استكماله من مستند أو واقعة.
+7) توقيت أو مرحلة إثارته إذا كان ذلك مؤثراً.
+8) درجة الأولوية: عالية أو متوسطة أو ضعيفة مع سبب مختصر.
+9) أقوى رد محتمل من الخصم على هذا الدفع.
+10) الرد المقترح للمحامي على جواب الخصم.
+افصل بين الدفع الذي تدعمه الوقائع الحالية والدفع الذي يحتاج معلومات إضافية. إذا لم يظهر دفع منتج حقيقي من المعطيات فقل ذلك بوضوح وحدد المعلومات الناقصة التي قد تكشفه.
+لا تختلق مادة قانونية أو رقم قرار أو سابقة قضائية؛ وإذا كان السند القانوني المحدد غير متأكد منه فاذكر أنه يحتاج إلى تحقق من المحامي.`;
 
-  Object.values(toolConfig).forEach((config) => {
-    if (!Array.isArray(config.fields)) return;
-    if (config.fields.some((field) => field?.name === defenseField.name)) return;
+  const card = document.createElement('button');
+  card.type = 'button';
+  card.id = 'productiveDefensesAction';
+  card.className = 'productive-defenses-action-card';
+  card.innerHTML = `
+    <span class="productive-defenses-icon" aria-hidden="true">⚖</span>
+    <span class="productive-defenses-copy">
+      <span class="productive-defenses-topline"><strong>الدفوع المنتجة</strong><em>خيار مستقل</em></span>
+      <small>يستخرج الدفوع المؤثرة في الدعوى ويرتبها حسب القوة والأولوية والأثر.</small>
+    </span>
+    <span class="productive-defenses-arrow" aria-hidden="true">‹</span>
+  `;
 
-    const subjectIndex = config.fields.findIndex((field) => ['subject', 'category', 'pleadingType'].includes(field?.name));
-    const insertAt = subjectIndex >= 0 ? subjectIndex + 1 : Math.min(2, config.fields.length);
-    config.fields.splice(insertAt, 0, { ...defenseField });
+  dynamicFields.insertAdjacentElement('afterend', card);
+
+  card.addEventListener('click', async () => {
+    if (typeof validateRequiredFields === 'function' && !validateRequiredFields()) return;
+
+    const fields = typeof collectFields === 'function' ? collectFields() : {};
+    const details = typeof caseDetails !== 'undefined' ? caseDetails.value.trim() : '';
+
+    card.disabled = true;
+    card.classList.add('is-loading');
+    const originalHtml = card.innerHTML;
+    card.innerHTML = `
+      <span class="productive-defenses-icon defense-spinner" aria-hidden="true">✦</span>
+      <span class="productive-defenses-copy"><strong>جاري استخراج الدفوع المنتجة...</strong><small>مراجعة الوقائع والمستندات وترتيب الدفوع حسب الأولوية.</small></span>
+    `;
+
+    if (typeof showLoading === 'function') {
+      showLoading('جاري تحليل الدفوع المنتجة في الدعوى وترتيبها حسب القوة والأثر...');
+    }
+
+    try {
+      const attachments = typeof prepareAttachments === 'function' ? await prepareAttachments() : [];
+      const baseTitle = typeof getTitleFromFields === 'function' ? getTitleFromFields(fields) : 'الدعوى';
+      const payload = {
+        tool: typeof activeTool !== 'undefined' ? activeTool : 'analysis',
+        title: `${baseTitle} — الدفوع المنتجة`,
+        fields,
+        details: [details, DEFENSE_PROMPT].filter(Boolean).join('\n\n'),
+        attachments
+      };
+
+      if (typeof lastSubmission !== 'undefined') lastSubmission = payload;
+      const result = await callAI(payload);
+      if (typeof renderResult === 'function') renderResult(result.text, result.model);
+    } catch (error) {
+      if (typeof renderError === 'function') renderError(error?.message || 'تعذر استخراج الدفوع المنتجة.');
+    } finally {
+      card.disabled = false;
+      card.classList.remove('is-loading');
+      card.innerHTML = originalHtml;
+    }
   });
-
-  function decorateDefenseField() {
-    const select = document.querySelector('#dynamicFields select[name="productiveDefenses"]');
-    if (!select) return;
-
-    const wrapper = select.closest('.field-block');
-    if (!wrapper) return;
-    wrapper.classList.add('productive-defenses-field');
-
-    if (!select.value && select.options.length > 1) select.selectedIndex = 1;
-
-    if (!wrapper.querySelector('.productive-defenses-info')) {
-      const info = document.createElement('div');
-      info.className = 'productive-defenses-info';
-      info.innerHTML = `
-        <span class="defense-badge" aria-hidden="true">⚖</span>
-        <div>
-          <strong>تحليل دفوع مؤثرة وليست مجرد اعتراضات عامة</strong>
-          <small>يرتبها الذكاء الاصطناعي حسب القوة والأولوية والأثر، ويبيّن ما يحتاج إثباتاً أو تحققاً.</small>
-        </div>
-      `;
-      select.insertAdjacentElement('afterend', info);
-    }
-
-    let hidden = document.querySelector('#dynamicFields input[name="defenseGuidance"]');
-    if (!hidden) {
-      hidden = document.createElement('input');
-      hidden.type = 'hidden';
-      hidden.name = 'defenseGuidance';
-      hidden.dataset.fieldLabel = 'تعليمات تحليل الدفوع المنتجة';
-      hidden.value = guidanceText;
-      document.getElementById('dynamicFields')?.appendChild(hidden);
-    }
-  }
-
-  const originalRenderToolFields = renderToolFields;
-  renderToolFields = function enhancedRenderToolFields(toolName) {
-    originalRenderToolFields(toolName);
-    decorateDefenseField();
-  };
-
-  const clearButton = document.getElementById('clearForm');
-  clearButton?.addEventListener('click', () => window.setTimeout(decorateDefenseField, 0));
-
-  const followUpBox = document.getElementById('followUpBox');
-  const followUpInput = document.getElementById('followUpInput');
-  const sendFollowUp = document.getElementById('sendFollowUp');
-
-  if (followUpBox && followUpInput && sendFollowUp && !followUpBox.querySelector('.productive-defense-action')) {
-    const quick = document.createElement('button');
-    quick.type = 'button';
-    quick.className = 'productive-defense-action';
-    quick.innerHTML = '<span>⚖</span><span>استخرج الدفوع المنتجة ورتّبها</span>';
-    quick.addEventListener('click', () => {
-      followUpInput.value = 'استخرج الدفوع المنتجة في هذه الدعوى فقط، وصنّفها ورتبها حسب القوة والأولوية والأثر، واذكر لكل دفع ما يلزم لإثباته وأقوى رد متوقع من الخصم.';
-      followUpInput.dispatchEvent(new Event('input', { bubbles: true }));
-      sendFollowUp.click();
-    });
-    const row = followUpBox.querySelector('.follow-up-row');
-    if (row) followUpBox.insertBefore(quick, row);
-  }
 
   const style = document.createElement('style');
   style.textContent = `
-    .productive-defenses-field {
-      position: relative;
-      overflow: hidden;
-      border: 1px solid rgba(229, 189, 89, .24);
-      border-radius: 17px;
-      padding: 14px;
-      background: linear-gradient(145deg, rgba(229, 189, 89, .07), rgba(255, 255, 255, .015));
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.025), 0 14px 34px rgba(0,0,0,.16);
-    }
-    .productive-defenses-field::before {
-      content: '';
-      position: absolute;
-      inset: 0 auto 0 0;
-      width: 2px;
-      background: linear-gradient(180deg, transparent, #e5bd59, transparent);
-      opacity: .72;
-    }
-    .productive-defenses-field .field-label {
-      color: #f0ce75;
-      font-weight: 800;
-    }
-    .productive-defenses-field select {
-      margin-top: 8px;
-    }
-    .productive-defenses-info {
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
-      margin-top: 10px;
-      padding: 10px 11px;
-      border-radius: 12px;
-      background: rgba(0, 0, 0, .24);
-      border: 1px solid rgba(229, 189, 89, .10);
-    }
-    .productive-defenses-info .defense-badge {
-      width: 28px;
-      height: 28px;
-      border-radius: 9px;
-      display: grid;
-      place-items: center;
-      flex: 0 0 auto;
-      color: #f1cf74;
-      background: rgba(229, 189, 89, .09);
-      border: 1px solid rgba(229, 189, 89, .18);
-    }
-    .productive-defenses-info strong,
-    .productive-defenses-info small {
-      display: block;
-    }
-    .productive-defenses-info strong {
-      color: #eee3c4;
-      font-size: 11.5px;
-      line-height: 1.75;
-    }
-    .productive-defenses-info small {
-      color: #908878;
-      font-size: 10px;
-      line-height: 1.75;
-      margin-top: 2px;
-    }
-    .productive-defense-action {
+    .productive-defenses-action-card {
       width: 100%;
+      position: relative;
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin: 10px 0;
-      padding: 10px 12px;
-      border-radius: 13px;
-      border: 1px solid rgba(229, 189, 89, .28);
-      background: linear-gradient(135deg, rgba(229, 189, 89, .10), rgba(184, 123, 35, .05));
-      color: #f0ce75;
+      gap: 12px;
+      margin: 2px 0 16px;
+      padding: 14px 14px;
+      text-align: right;
       font-family: inherit;
-      font-weight: 700;
+      color: #eee3c4;
+      border: 1px solid rgba(229,189,89,.30);
+      border-radius: 17px;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(229,189,89,.12), transparent 34%),
+        linear-gradient(145deg, rgba(229,189,89,.08), rgba(255,255,255,.018));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.035), 0 16px 34px rgba(0,0,0,.18);
       cursor: pointer;
+      overflow: hidden;
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
     }
-    .productive-defense-action:active { transform: scale(.985); }
+    .productive-defenses-action-card::before {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 16%;
+      bottom: 16%;
+      width: 2px;
+      border-radius: 4px;
+      background: linear-gradient(180deg, transparent, #f1cf74, transparent);
+      opacity: .85;
+    }
+    .productive-defenses-action-card:active { transform: scale(.988); }
+    .productive-defenses-action-card:disabled { opacity: .72; cursor: wait; }
+    .productive-defenses-icon {
+      width: 42px;
+      height: 42px;
+      flex: 0 0 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      font-size: 18px;
+      color: #f3d478;
+      background: rgba(229,189,89,.09);
+      border: 1px solid rgba(229,189,89,.23);
+      box-shadow: 0 0 24px rgba(229,189,89,.07);
+    }
+    .productive-defenses-copy { min-width: 0; flex: 1; display: block; }
+    .productive-defenses-topline { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .productive-defenses-copy strong { display: block; color: #f1cf74; font-size: 13px; font-weight: 800; line-height: 1.7; }
+    .productive-defenses-copy small { display: block; margin-top: 3px; color: #9b9281; font-size: 10.5px; line-height: 1.75; }
+    .productive-defenses-topline em {
+      font-style: normal;
+      font-size: 8.5px;
+      font-weight: 700;
+      color: #bda45f;
+      border: 1px solid rgba(229,189,89,.20);
+      background: rgba(229,189,89,.05);
+      border-radius: 999px;
+      padding: 2px 7px;
+    }
+    .productive-defenses-arrow { color: #cda94f; font-size: 24px; line-height: 1; opacity: .78; }
+    .defense-spinner { animation: defenseSpin 1.1s linear infinite; }
+    @keyframes defenseSpin { to { transform: rotate(360deg); } }
   `;
   document.head.appendChild(style);
 })();
