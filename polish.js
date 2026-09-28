@@ -7,7 +7,7 @@
   const HEADING_WORDS = [
     'ملخص', 'الملخص', 'الوقائع', 'الوقائع الأساسية', 'المسائل القانونية',
     'الأدلة', 'الأدلة الموجودة', 'الأدلة الناقصة', 'المعلومات الناقصة',
-    'نقاط القوة', 'نقاط الضعف', 'الدفوع المحتملة', 'الدفوع', 'الطلبات',
+    'نقاط القوة', 'نقاط الضعف', 'الدفوع المنتجة', 'الدفوع المحتملة', 'الدفوع', 'الطلبات',
     'أسباب الطعن', 'الأساس القانوني', 'الخطوة التالية', 'المقترح العملي',
     'أسئلة للموكل', 'المستندات المطلوبة', 'ملاحظات', 'النتيجة'
   ];
@@ -170,4 +170,13 @@
       sendFollowUp.classList.toggle('has-text', Boolean(followUpInput.value.trim()));
     });
   }
+})();
+
+(() => {
+  if (document.querySelector('script[data-productive-defenses]')) return;
+  const script = document.createElement('script');
+  script.src = '/defenses.js';
+  script.async = false;
+  script.dataset.productiveDefenses = 'true';
+  document.head.appendChild(script);
 })();
