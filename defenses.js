@@ -97,4 +97,12 @@
     }
   `;
   document.head.appendChild(style);
+
+  if (!document.querySelector('script[data-cassation-principles]')) {
+    const script = document.createElement('script');
+    script.src = '/principles.js';
+    script.async = false;
+    script.dataset.cassationPrinciples = 'true';
+    document.head.appendChild(script);
+  }
 })();
