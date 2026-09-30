@@ -1,4 +1,4 @@
-const CACHE_NAME = 'alaa-legal-v4';
+const CACHE_NAME = 'alaa-legal-v5';
 const APP_SHELL = [
   '/',
   '/index.html',
@@ -7,6 +7,7 @@ const APP_SHELL = [
   '/app.js',
   '/polish.js',
   '/defenses.js',
+  '/principles.js',
   '/manifest.webmanifest',
   '/icon.svg'
 ];
