@@ -105,4 +105,12 @@
     script.dataset.cassationPrinciples = 'true';
     document.head.appendChild(script);
   }
+
+  if (!document.querySelector('script[data-criminal-enhancements]')) {
+    const script = document.createElement('script');
+    script.src = '/criminal-enhancements.js';
+    script.async = false;
+    script.dataset.criminalEnhancements = 'true';
+    document.head.appendChild(script);
+  }
 })();
